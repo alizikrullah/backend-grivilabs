@@ -1,0 +1,124 @@
+// =============================================================
+// GriviLabs Compro - Prisma Schema
+// PENTING: Jangan pernah jalankan prisma migrate di sini.
+//          DB dikelola Directus. Pakai prisma generate saja.
+// =============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  slug         String    @unique
+  excerpt      String?
+  content      String?
+  cover_image  String?
+  author       String?
+  tags         String?
+  publish_date DateTime? @default(now()) @db.Timestamptz(6)
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  is_published Boolean?  @default(true)
+
+  @@map("posts")
+}
+
+model PortfolioCategory {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug          String          @unique @db.VarChar(100)
+  label         String          @db.VarChar(100)
+  description   String?
+  display_order Int             @default(0)
+  is_active     Boolean         @default(true)
+  created_at    DateTime?       @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime?       @default(now()) @db.Timestamptz(6)
+  items         PortfolioItem[]
+
+  @@map("portfolio_categories")
+}
+
+model PortfolioItem {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title              String              @db.VarChar(200)
+  slug               String              @unique @db.VarChar(200)
+  category_slug      String              @db.VarChar(100)
+  industry           String              @db.VarChar(100)
+  description        String
+  thumbnail_url      String?
+  live_url           String?
+  demo_url           String?
+  is_published       Boolean?            @default(true)
+  is_placeholder     Boolean?            @default(false)
+  is_real            Boolean?            @default(true)
+  is_confidential    Boolean?            @default(false)
+  confidential_level String?             @db.VarChar(20)
+  modal_lines        String[]
+  is_featured        Boolean?            @default(false)
+  display_order      Int                 @default(0)
+  created_at         DateTime?           @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime?           @default(now()) @db.Timestamptz(6)
+  created_by         String?             @db.Uuid
+  updated_by         String?             @db.Uuid
+  category           PortfolioCategory   @relation(fields: [category_slug], references: [slug])
+  flags              PortfolioItemFlag[]
+
+  @@map("portfolio_items")
+}
+
+model PortfolioFlag {
+  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug          String              @unique
+  label         String
+  color_bg      String
+  color_text    String
+  icon          String?
+  display_order Int                 @default(0)
+  is_active     Boolean             @default(true)
+  created_at    DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime            @default(now()) @db.Timestamptz(6)
+  flag_category String              @default("status")
+  items         PortfolioItemFlag[]
+
+  @@map("portfolio_flags")
+}
+
+model PortfolioItemFlag {
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  item_id    String        @db.Uuid
+  flag_id    String        @db.Uuid
+  created_at DateTime?     @default(now()) @db.Timestamptz(6)
+  item       PortfolioItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  flag       PortfolioFlag @relation(fields: [flag_id], references: [id], onDelete: Cascade)
+
+  @@map("portfolio_item_flags")
+}
+
+model Document {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type          String
+  nomor_dokumen String
+  tanggal       DateTime @db.Date
+  payload       Json     @default("{}")
+  created_at    DateTime @default(dbgenerated("timezone('utc'::text, now())")) @db.Timestamptz(6)
+
+  @@map("documents")
+}
+
+model Lead {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  email      String
+  phone      String?
+  company    String?
+  service    String?
+  message    String
+  status     String   @default("new")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("leads")
+}
