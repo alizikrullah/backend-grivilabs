@@ -7,15 +7,15 @@ COPY prisma/ ./prisma/
 COPY prisma.config.ts ./
 COPY tsconfig.json ./
 
-# Install semua deps termasuk devDeps untuk build
-# NODE_ENV sengaja tidak di-set di sini supaya @types/* ikut terinstall
-RUN npm ci
+# Paksa development supaya devDependencies ikut terinstall
+# Coolify inject NODE_ENV=production sebagai build arg, ini override-nya
+RUN NODE_ENV=development npm ci
 
 COPY src/ ./src/
 
 RUN npm run build
 
-# Hapus devDeps setelah build, biar image lebih kecil
+# Hapus devDeps setelah build
 RUN npm prune --production
 
 EXPOSE 3001
