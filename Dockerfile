@@ -2,19 +2,21 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy dependency files + prisma schema dulu
 COPY package*.json ./
 COPY prisma/ ./prisma/
 COPY prisma.config.ts ./
 COPY tsconfig.json ./
 
-# Install deps (otomatis trigger postinstall -> prisma generate)
+# Install semua deps termasuk devDeps untuk build
+# NODE_ENV sengaja tidak di-set di sini supaya @types/* ikut terinstall
 RUN npm ci
 
-# Copy source baru compile
 COPY src/ ./src/
 
 RUN npm run build
+
+# Hapus devDeps setelah build, biar image lebih kecil
+RUN npm prune --production
 
 EXPOSE 3001
 
