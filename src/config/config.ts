@@ -9,3 +9,4 @@ export const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173";
 export const JWT_SECRET = getRequiredEnv("JWT_SECRET");
 export const REFRESH_TOKEN_SECRET = getRequiredEnv("REFRESH_TOKEN_SECRET");
 export const DIRECTUS_URL = getRequiredEnv("DIRECTUS_URL");
+export const DIRECTUS_STATIC_TOKEN = getRequiredEnv("DIRECTUS_STATIC_TOKEN");

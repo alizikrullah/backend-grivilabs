@@ -5,21 +5,30 @@ import type { TLoginBody } from "./auth.schemas.js";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 
+// sameSite "none" diperlukan untuk cross-site requests (frontend .vercel.app ke backend .my.id)
+// sameSite "none" wajib pasang dengan secure: true (hanya boleh di HTTPS/production)
+// Di dev: pakai "lax" supaya bisa jalan di localhost tanpa HTTPS
+const SAME_SITE = IS_PROD ? ("none" as const) : ("lax" as const);
+
 const ACCESS_COOKIE = {
   httpOnly: true,
   secure: IS_PROD,
-  sameSite: "strict" as const,
-  maxAge: 15 * 60 * 1000,
+  sameSite: SAME_SITE,
+  maxAge: 15 * 60 * 1000, // 15 menit
 };
 
 const REFRESH_COOKIE = {
   httpOnly: true,
   secure: IS_PROD,
-  sameSite: "strict" as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  sameSite: SAME_SITE,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
 };
 
-const CLEAR_COOKIE = { httpOnly: true, secure: IS_PROD, sameSite: "strict" as const };
+const CLEAR_COOKIE = {
+  httpOnly: true,
+  secure: IS_PROD,
+  sameSite: SAME_SITE,
+};
 
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
   try {

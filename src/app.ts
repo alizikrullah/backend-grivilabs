@@ -8,6 +8,7 @@ import { AppError } from "./class/appError.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
+import uploadRoutes from "./modules/upload/upload.routes.js";
 import postsPublicRoutes from "./modules/posts/posts.routes.js";
 import postsAdminRoutes from "./modules/posts/posts.admin.routes.js";
 import portfolioPublicRoutes from "./modules/portfolio/portfolio.routes.js";
@@ -17,11 +18,20 @@ import leadsAdminRoutes from "./modules/leads/leads.admin.routes.js";
 
 const app = express();
 
+// Support multiple origins dipisah koma di env:
+// FRONTEND_URL=http://localhost:5173,https://grivilabs.vercel.app
+const allowedOrigins = FRONTEND_URL.split(",").map((o) => o.trim());
+
 app.disable("x-powered-by");
 app.use(cookieParser());
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, Postman, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin ${origin} tidak diizinkan`));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -48,6 +58,7 @@ app.use("/api/leads", leadsPublicRoutes);
 
 // Admin
 app.use("/api/admin/auth", authRoutes);
+app.use("/api/admin/upload", uploadRoutes);
 app.use("/api/admin/posts", postsAdminRoutes);
 app.use("/api/admin/portfolio", portfolioAdminRoutes);
 app.use("/api/admin/leads", leadsAdminRoutes);
