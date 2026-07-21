@@ -13,19 +13,69 @@ datasource db {
 }
 
 model Post {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title        String
-  slug         String    @unique
-  excerpt      String?
-  content      String?
-  cover_image  String?
-  author       String?
-  tags         String?
-  publish_date DateTime? @default(now()) @db.Timestamptz(6)
-  created_at   DateTime? @default(now()) @db.Timestamptz(6)
-  is_published Boolean?  @default(true)
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title         String
+  slug          String    @unique
+  excerpt       String?
+  content       String?
+  cover_image   String?
+  cover_caption String?
+  author        String?
+  tags          String?
+  publish_date  DateTime? @default(now()) @db.Timestamptz(6)
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  is_published  Boolean?  @default(true)
 
   @@map("posts")
+}
+
+model Service {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug          String  @unique
+  label         String
+  short_label   String
+  icon          String?
+  tagline       String?
+  is_single     Boolean @default(false)
+  display_order Int     @default(0)
+  is_published  Boolean @default(true)
+
+  // Kartu di halaman depan. Harganya tidak disimpan di sini — dihitung dari
+  // tier supaya angkanya cuma diketik di satu tempat.
+  show_on_home        Boolean @default(false)
+  home_order          Int     @default(0)
+  home_subtitle       String?
+  home_description    String?
+  home_duration       String?
+  home_icon           String?
+  home_features       Json?
+  home_featured       Boolean @default(false)
+  home_price_override String?
+
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+
+  tiers ServiceTier[]
+
+  @@map("services")
+}
+
+model ServiceTier {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  service_id     String  @db.Uuid
+  name           String
+  badge          String?
+  price          String
+  price_note     String?
+  description    String?
+  features       Json?
+  cta            String?
+  is_highlighted Boolean @default(false)
+  display_order  Int     @default(0)
+
+  service Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
+
+  @@map("service_tiers")
 }
 
 model PortfolioCategory {

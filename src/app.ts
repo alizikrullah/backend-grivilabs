@@ -15,6 +15,8 @@ import portfolioPublicRoutes from "./modules/portfolio/portfolio.routes.js";
 import portfolioAdminRoutes from "./modules/portfolio/portfolio.admin.routes.js";
 import leadsPublicRoutes from "./modules/leads/leads.routes.js";
 import leadsAdminRoutes from "./modules/leads/leads.admin.routes.js";
+import servicesPublicRoutes from "./modules/services/services.routes.js";
+import servicesAdminRoutes from "./modules/services/services.admin.routes.js";
 
 const app = express();
 
@@ -55,6 +57,7 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/api/posts", postsPublicRoutes);
 app.use("/api/portfolio", portfolioPublicRoutes);
 app.use("/api/leads", leadsPublicRoutes);
+app.use("/api/services", servicesPublicRoutes);
 
 // Admin
 app.use("/api/admin/auth", authRoutes);
@@ -62,6 +65,7 @@ app.use("/api/admin/upload", uploadRoutes);
 app.use("/api/admin/posts", postsAdminRoutes);
 app.use("/api/admin/portfolio", portfolioAdminRoutes);
 app.use("/api/admin/leads", leadsAdminRoutes);
+app.use("/api/admin/services", servicesAdminRoutes);
 
 app.use((_req, _res, next) => {
   next(new AppError(404, "Route not found"));

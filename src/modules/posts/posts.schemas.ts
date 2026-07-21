@@ -6,6 +6,7 @@ export const createPostSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().optional(),
   cover_image: z.string().optional(),
+  cover_caption: z.string().optional(),
   author: z.string().optional(),
   tags: z.string().optional(),
   publish_date: z.string().optional(),
