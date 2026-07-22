@@ -61,8 +61,10 @@ export const updateService = (id: string, { tiers, ...data }: TUpdateService) =>
       ...data,
       home_features: data.home_features ?? undefined,
       updated_at: new Date(),
-      // Daftar tier diganti utuh hanya kalau klien memang mengirimnya.
-      ...(tiers
+      // Daftar tier diganti utuh hanya kalau klien memang mengirimnya. Cek
+      // `!== undefined`, BUKAN truthiness — array kosong pun truthy, jadi
+      // `tiers ?` dulu keliru menganggap [] sebagai "ganti dengan kosong".
+      ...(tiers !== undefined
         ? { tiers: { deleteMany: {}, create: tierRows(tiers) } }
         : {}),
     },

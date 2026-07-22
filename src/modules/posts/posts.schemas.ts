@@ -10,7 +10,11 @@ export const createPostSchema = z.object({
   author: z.string().optional(),
   tags: z.string().optional(),
   publish_date: z.string().optional(),
-  is_published: z.boolean().optional().default(true),
+  // Tanpa .default(true): updatePostSchema = .partial(), dan Zod tetap
+  // menjalankan default pada partial — sehingga mengedit artikel tanpa
+  // mengirim is_published akan diam-diam menerbitkan ulang draft. Nilai
+  // default untuk post baru ditangani schema Prisma (is_published @default(true)).
+  is_published: z.boolean().optional(),
 });
 
 export const updatePostSchema = createPostSchema.partial();

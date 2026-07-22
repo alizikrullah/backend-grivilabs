@@ -14,30 +14,37 @@ export const createTierSchema = z.object({
   display_order: z.number().int().optional().default(0),
 });
 
+// PENTING: jangan pakai .default() di sini. updateServiceSchema di bawah dibuat
+// dengan .partial(), dan Zod TETAP menjalankan .default() pada partial — sehingga
+// PUT parsial (mis. toggle publish yang cuma kirim is_published) akan menyuntikkan
+// SEMUA default: tiers:[] menghapus seluruh tier, show_on_home:false mencabut dari
+// homepage, dst. Nilai default untuk create sudah ditangani schema Prisma
+// (semua kolom ini punya @default yang nilainya sama), jadi cukup .optional().
 export const createServiceSchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   label: z.string().min(1, "Label is required"),
   short_label: z.string().min(1, "Short label is required"),
   icon: z.string().optional().nullable(),
   tagline: z.string().optional().nullable(),
-  is_single: z.boolean().optional().default(false),
-  display_order: z.number().int().optional().default(0),
-  is_published: z.boolean().optional().default(true),
+  is_single: z.boolean().optional(),
+  display_order: z.number().int().optional(),
+  is_published: z.boolean().optional(),
 
-  show_on_home: z.boolean().optional().default(false),
-  home_order: z.number().int().optional().default(0),
+  show_on_home: z.boolean().optional(),
+  home_order: z.number().int().optional(),
   home_subtitle: z.string().optional().nullable(),
   home_description: z.string().optional().nullable(),
   home_duration: z.string().optional().nullable(),
   home_icon: z.string().optional().nullable(),
   home_features: featureList,
-  home_featured: z.boolean().optional().default(false),
+  home_featured: z.boolean().optional(),
   home_price_override: z.string().optional().nullable(),
 
   // Tier dikirim menyatu dengan paketnya. Menyimpan paket berarti mengganti
   // seluruh daftar tier-nya — lebih sederhana dan tidak meninggalkan tier yatim
   // dibanding mengelola tambah/ubah/hapus satu per satu dari sisi frontend.
-  tiers: z.array(createTierSchema).optional().default([]),
+  // Tanpa .default([]) supaya update parsial tidak ikut menghapus tier.
+  tiers: z.array(createTierSchema).optional(),
 });
 
 export const updateServiceSchema = createServiceSchema.partial();

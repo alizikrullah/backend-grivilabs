@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+// PENTING: schema *create* di file ini TIDAK boleh pakai .default(). Setiap
+// update-nya dibuat lewat .partial(), dan Zod tetap menjalankan .default() pada
+// partial — jadi PUT parsial (mis. toggle publish yang cuma kirim is_published)
+// akan menyuntikkan SEMUA default. Untuk item, itu ikut menulis modal_lines:[]
+// (menghapus konten modal) dan flag_ids:[] (mencabut semua flag). Nilai default
+// untuk data baru sudah ditangani schema Prisma (@default pada tiap kolom).
+// Catatan: schema *query* di bawah tetap boleh .default() — tidak di-partial().
+
 export const idParamsSchema = z.object({
   id: z.string().uuid("Invalid ID"),
 });
@@ -9,8 +17,8 @@ export const createCategorySchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   label: z.string().min(1, "Label is required"),
   description: z.string().optional(),
-  display_order: z.number().int().optional().default(0),
-  is_active: z.boolean().optional().default(true),
+  display_order: z.number().int().optional(),
+  is_active: z.boolean().optional(),
 });
 export const updateCategorySchema = createCategorySchema.partial();
 
@@ -21,9 +29,9 @@ export const createFlagSchema = z.object({
   color_bg: z.string().min(1, "Background color is required"),
   color_text: z.string().min(1, "Text color is required"),
   icon: z.string().optional(),
-  display_order: z.number().int().optional().default(0),
-  is_active: z.boolean().optional().default(true),
-  flag_category: z.string().optional().default("status"),
+  display_order: z.number().int().optional(),
+  is_active: z.boolean().optional(),
+  flag_category: z.string().optional(),
 });
 export const updateFlagSchema = createFlagSchema.partial();
 
@@ -37,15 +45,15 @@ export const createItemSchema = z.object({
   thumbnail_url: z.string().optional(),
   live_url: z.string().optional(),
   demo_url: z.string().optional(),
-  is_published: z.boolean().optional().default(true),
-  is_placeholder: z.boolean().optional().default(false),
-  is_real: z.boolean().optional().default(true),
-  is_confidential: z.boolean().optional().default(false),
+  is_published: z.boolean().optional(),
+  is_placeholder: z.boolean().optional(),
+  is_real: z.boolean().optional(),
+  is_confidential: z.boolean().optional(),
   confidential_level: z.enum(["high", "standard"]).optional(),
-  modal_lines: z.array(z.string()).optional().default([]),
-  is_featured: z.boolean().optional().default(false),
-  display_order: z.number().int().optional().default(0),
-  flag_ids: z.array(z.string().uuid()).optional().default([]),
+  modal_lines: z.array(z.string()).optional(),
+  is_featured: z.boolean().optional(),
+  display_order: z.number().int().optional(),
+  flag_ids: z.array(z.string().uuid()).optional(),
 });
 export const updateItemSchema = createItemSchema.partial();
 
