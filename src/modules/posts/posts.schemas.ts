@@ -3,12 +3,17 @@ import { z } from "zod";
 export const createPostSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
-  excerpt: z.string().optional(),
-  content: z.string().optional(),
-  cover_image: z.string().optional(),
-  cover_caption: z.string().optional(),
-  author: z.string().optional(),
-  tags: z.string().optional(),
+  // .nullish() = string | null | undefined. Form Create/Edit blog mengirim
+  // `cover_image || null`, `cover_caption || null`, `tags || null` saat field
+  // dikosongkan; semua kolom ini String? di DB, jadi menulis null memang cara
+  // mengosongkannya. .optional() saja menolak null → PUT/POST 400
+  // "expected string, received null". Sisanya dibuat nullish juga agar konsisten.
+  excerpt: z.string().nullish(),
+  content: z.string().nullish(),
+  cover_image: z.string().nullish(),
+  cover_caption: z.string().nullish(),
+  author: z.string().nullish(),
+  tags: z.string().nullish(),
   publish_date: z.string().optional(),
   // Tanpa .default(true): updatePostSchema = .partial(), dan Zod tetap
   // menjalankan default pada partial — sehingga mengedit artikel tanpa
