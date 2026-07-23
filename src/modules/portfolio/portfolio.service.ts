@@ -72,6 +72,12 @@ export const getAllItemsAdminService = async (query: TAdminItemQuery) => {
   return { data: items, meta: buildMeta(query.page, query.limit, total) };
 };
 
+export const getItemByIdService = async (id: string) => {
+  const item = await findItemById(id);
+  if (!item) throw new AppError(404, "Portfolio item not found");
+  return item;
+};
+
 export const createItemService = async (data: TCreateItem) => {
   const item = await createItem(data);
   if (!item) throw new AppError(500, "Failed to create portfolio item");

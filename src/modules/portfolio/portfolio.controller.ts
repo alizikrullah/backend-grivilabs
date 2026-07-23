@@ -5,7 +5,7 @@ import {
   getActiveFlagsService, getAllFlagsAdminService,
   createFlagService, updateFlagService, deleteFlagService,
   getPublishedItemsService, getPublishedItemBySlugService,
-  getAllItemsAdminService, createItemService, updateItemService, deleteItemService,
+  getAllItemsAdminService, getItemByIdService, createItemService, updateItemService, deleteItemService,
 } from "./portfolio.service.js";
 import type {
   TCreateCategory, TUpdateCategory,
@@ -74,6 +74,10 @@ export const getPublishedItemBySlugController = async (req: Request, res: Respon
 };
 export const getAllItemsAdminController = async (req: Request, res: Response, next: NextFunction) => {
   try { return res.status(200).json({ message: "OK", ...await getAllItemsAdminService(req.validated?.query as TAdminItemQuery) }); }
+  catch (error) { next(error); }
+};
+export const getItemByIdController = async (req: Request, res: Response, next: NextFunction) => {
+  try { return res.status(200).json({ message: "OK", data: await getItemByIdService((req.validated?.params as TIdParams).id) }); }
   catch (error) { next(error); }
 };
 export const createItemController = async (req: Request, res: Response, next: NextFunction) => {

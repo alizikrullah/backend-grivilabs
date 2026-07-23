@@ -4,7 +4,7 @@ import { verifyAdminAccessToken } from "../../middlewares/authenticate.middlewar
 import {
   getAllCategoriesAdminController, createCategoryController, updateCategoryController, deleteCategoryController,
   getAllFlagsAdminController, createFlagController, updateFlagController, deleteFlagController,
-  getAllItemsAdminController, createItemController, updateItemController, deleteItemController,
+  getAllItemsAdminController, getItemByIdController, createItemController, updateItemController, deleteItemController,
 } from "./portfolio.controller.js";
 import {
   createCategorySchema, updateCategorySchema,
@@ -30,6 +30,7 @@ portfolioAdminRoutes.delete("/flags/:id", validateSchema(idParamsSchema, "params
 
 // Items
 portfolioAdminRoutes.get("/items", validateSchema(adminItemQuerySchema, "query"), getAllItemsAdminController);
+portfolioAdminRoutes.get("/items/:id", validateSchema(idParamsSchema, "params"), getItemByIdController);
 portfolioAdminRoutes.post("/items", validateSchema(createItemSchema, "body"), createItemController);
 portfolioAdminRoutes.put("/items/:id", validateSchema(idParamsSchema, "params"), validateSchema(updateItemSchema, "body"), updateItemController);
 portfolioAdminRoutes.delete("/items/:id", validateSchema(idParamsSchema, "params"), deleteItemController);
